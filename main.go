@@ -137,7 +137,7 @@ func main() {
 	app.Name = "superflash"
 	app.Usage = "Accelerated image flashing utility"
 	app.Version = "2.1"
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:      "blank",
 			Usage:     "Create a blank image",
@@ -161,16 +161,16 @@ func main() {
 }
 
 func actionBlank(c *cli.Context) error {
-	if len(c.Args()) != 2 {
+	if c.Args().Len() != 2 {
 		fmt.Println("usage: superflash blank <size in MB> <filename>")
 		os.Exit(1)
 	}
-	size, err := strconv.ParseInt(c.Args()[0], 10, 64)
+	size, err := strconv.ParseInt(c.Args().Get(0), 10, 64)
 	if err != nil {
 		fmt.Println("could not parse size")
 		os.Exit(1)
 	}
-	off, err := os.Create(c.Args()[1])
+	off, err := os.Create(c.Args().Get(1))
 	if err != nil {
 		fmt.Println("could not create output file:", err)
 		os.Exit(1)
@@ -188,22 +188,22 @@ func actionBlank(c *cli.Context) error {
 	return nil
 }
 func actionEncode(c *cli.Context) error {
-	if len(c.Args()) < 1 || len(c.Args()) > 2 {
+	if c.Args().Len() < 1 || c.Args().Len() > 2 {
 		fmt.Println("usage superflash encode imgfile [outfile]")
 		os.Exit(1)
 	}
-	outfile := c.Args()[0] + ".sfmap"
-	if len(c.Args()) == 2 {
-		outfile = c.Args()[1]
+	outfile := c.Args().Get(0) + ".sfmap"
+	if c.Args().Len() == 2 {
+		outfile = c.Args().Get(1)
 	}
-	GenerateSFMap(c.Args()[0], outfile)
+	GenerateSFMap(c.Args().Get(0), outfile)
 	return nil
 }
 func actionFlash(c *cli.Context) error {
-	if len(c.Args()) != 2 {
+	if c.Args().Len() != 2 {
 		fmt.Println("usage superflash flash <sfmap> <device>")
 		os.Exit(1)
 	}
-	ExecuteSFMap(c.Args()[0], c.Args()[1])
+	ExecuteSFMap(c.Args().Get(0), c.Args().Get(1))
 	return nil
 }
